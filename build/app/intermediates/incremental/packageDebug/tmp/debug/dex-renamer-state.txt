@@ -1,0 +1,4 @@
+#Fri Nov 19 01:11:08 EET 2021
+base.0=E\:\\development\\F_Projects\\andrea course\\time_tracker\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
