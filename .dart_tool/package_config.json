@@ -98,6 +98,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "flutter_login_facebook",
+      "rootUri": "file:///E:/development/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_login_facebook-0.4.0+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.7"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///E:/development/flutter/packages/flutter_test",
       "packageUri": "lib/",
@@ -150,6 +156,12 @@
       "rootUri": "file:///E:/development/flutter/.pub-cache/hosted/pub.dartlang.org/lints-1.0.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "list_ext",
+      "rootUri": "file:///E:/development/flutter/.pub-cache/hosted/pub.dartlang.org/list_ext-0.1.15",
+      "packageUri": "lib/",
+      "languageVersion": "2.6"
     },
     {
       "name": "matcher",
@@ -242,7 +254,7 @@
       "languageVersion": "2.10"
     }
   ],
-  "generated": "2021-11-18T22:06:07.686140Z",
+  "generated": "2021-11-23T21:17:23.929067Z",
   "generator": "pub",
   "generatorVersion": "2.14.2"
 }

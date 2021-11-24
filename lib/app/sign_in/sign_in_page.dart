@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_tracker/app/sign_in/email_sign_in_page.dart';
 
 import '/app/sign_in/sign_in_button.dart';
 import '/app/sign_in/social_sign_in_button.dart';
@@ -25,22 +26,37 @@ class SignInPage extends StatelessWidget {
     }
   }
 
+  Future<void> _sginInWithFacebook() async {
+    try {
+      await auth.signInWithFacebook();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  void _signInWithEmail(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (context) => EmailSignInPage(
+        auth: auth,
+      ),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
-    var scaffold = Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: const Text(
           "Time Tracker",
         ),
         elevation: 3.0,
       ),
-      body: _signInContant(),
+      body: _signInContant(context),
       backgroundColor: Colors.grey[200],
     );
-    return scaffold;
   }
 
-  Widget _signInContant() {
+  Widget _signInContant(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -63,12 +79,12 @@ class SignInPage extends StatelessWidget {
               assetName: 'images/facebook-logo.png',
               text: "Sign in with Facebook",
               color: const Color(0xFF334D92),
-              onPressed: () {}),
+              onPressed: _sginInWithFacebook),
           const SizedBox(height: 8.0),
           SignInButton(
               text: "Sign in with email",
               color: Colors.teal[700],
-              onPressed: () {}),
+              onPressed: () => _signInWithEmail(context)),
           const SizedBox(height: 8.0),
           const Text('or',
               style: TextStyle(fontSize: 14.0, color: Colors.black87),
