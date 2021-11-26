@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_tracker/common_widgets/alert_dialog.dart';
 import 'package:time_tracker/services/auth.dart';
 
 class HomePage extends StatelessWidget {
@@ -10,6 +11,17 @@ class HomePage extends StatelessWidget {
       await auth.signOut();
     } catch (e) {
       print(e.toString());
+    }
+  }
+
+  Future<void> _confirmSignInOut(BuildContext context) async {
+    final didRequestSignOut = await showAlertDialog(context,
+        title: 'Logout',
+        content: 'Are you sure you want ro logout',
+        defaultActionText: 'Logout',
+        cancelActionText: 'Cancel');
+    if (didRequestSignOut == true) {
+      _sginOut();
     }
   }
 
@@ -27,7 +39,7 @@ class HomePage extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            onPressed: _sginOut,
+            onPressed: () => _confirmSignInOut(context),
           ),
         ],
       ),

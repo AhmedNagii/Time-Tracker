@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_tracker/common_widgets/alert_dialog.dart';
 import 'package:time_tracker/services/auth.dart';
 import '/app/sign_in/validators.dart';
 import '/common_widgets/form_submit_button.dart';
@@ -20,14 +21,17 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   final FocusNode _emailFocuseNode = FocusNode();
   final FocusNode _passwordFocuseNode = FocusNode();
 
-  EmailFormType _formType = EmailFormType.signIn;
   String get _email => _eamilController.text;
   String get _password => _passwordController.text;
+  EmailFormType _formType = EmailFormType.signIn;
+
   bool _submitted = false;
+  bool _isLoading = false;
 
   void _submit() async {
     setState(() {
       _submitted = true;
+      _isLoading = true;
     });
     try {
       if (_formType == EmailFormType.signIn) {
@@ -37,12 +41,40 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       }
       Navigator.of(context).pop();
     } catch (e) {
-      print(e.toString());
+      showAlertDialog(context,
+          title: 'Sign in failed',
+          content: e.toString(),
+          defaultActionText: 'OK');
+
+//       if(Platform == TargetPlatform.iOS ){
+// print('fuck');
+//       }else{
+//       showDialog(
+//           context: context,
+//           builder: (context) {
+//             return AlertDialog(
+//               title: const Text('Sign in failed'),
+//               content: Text(e.toString()),
+//               actions: [
+//                 TextButton(
+//                   child: const Text('OK'),
+//                   onPressed: () => Navigator.of(context).pop(),
+//                 )
+//               ],
+//             );
+//           });}
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   void _emailEditingComplete() {
-    FocusScope.of(context).requestFocus(_passwordFocuseNode);
+    final newFocus = widget.emailValidator.isVaild(_email)
+        ? _passwordFocuseNode
+        : _emailFocuseNode;
+    FocusScope.of(context).requestFocus(newFocus);
   }
 
   void _toggleFormType() {
@@ -64,7 +96,8 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
         : 'I have an account';
 
     bool submitEnabled = widget.emailValidator.isVaild(_email) &&
-        widget.passwordValidator.isVaild(_password);
+        widget.passwordValidator.isVaild(_password) &&
+        !_isLoading;
     _email.isNotEmpty && _password.isNotEmpty;
 
     bool showErrorTextEmail =
@@ -76,6 +109,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
         controller: _eamilController,
         focusNode: _emailFocuseNode,
         decoration: InputDecoration(
+          enabled: _isLoading == false,
           labelText: 'Email',
           hintText: 'example@test.com',
           errorText: showErrorTextEmail ? widget.invaildEmailErrorText : null,
@@ -93,6 +127,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
         controller: _passwordController,
         focusNode: _passwordFocuseNode,
         decoration: InputDecoration(
+          enabled: _isLoading == false,
           labelText: 'Password',
           errorText:
               showErrorTextPassowrd ? widget.invaildPasswordErrorText : null,
@@ -113,7 +148,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       ),
       TextButton(
         child: Text(secondaryText),
-        onPressed: _toggleFormType,
+        onPressed: !_isLoading ? _toggleFormType : null,
       )
     ];
   }
