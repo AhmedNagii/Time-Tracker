@@ -1,44 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:time_tracker/app/sign_in/email_sign_in_page.dart';
+import 'package:time_tracker/common_widgets/show_exception_alert_dialog.dart';
+import 'package:time_tracker/services/auth.dart';
+import '/app/sign_in/email_sign_in_page.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '/app/sign_in/sign_in_button.dart';
 import '/app/sign_in/social_sign_in_button.dart';
-import '/services/auth.dart';
 
 class SignInPage extends StatelessWidget {
-  const SignInPage({Key key, @required this.auth}) : super(key: key);
+  const SignInPage({
+    Key key,
+  }) : super(key: key);
 
-  final Authbase auth;
+  void _showSignInError(BuildContext context, Exception exception) {
+    if (exception is FirebaseException &&
+        exception.code == 'ERROR_ABORTED_BY_USER') {
+      return;
+    }
 
-  Future<void> _sginInAnonymously() async {
+    showExceptionAlertDialog(context,
+        title: 'Sgin in faild', exception: exception);
+  }
+
+  Future<void> _sginInAnonymously(BuildContext context) async {
+    final auth = Provider.of<Authbase>(context, listen: false);
     try {
       await auth.signInAnonymous();
     } catch (e) {
-      print(e.toString());
+      _showSignInError(context, e);
     }
   }
 
-  Future<void> _sginInWithGoogle() async {
+  Future<void> _sginInWithGoogle(BuildContext context) async {
+    final auth = Provider.of<Authbase>(context, listen: false);
     try {
       await auth.signInWithGoogle();
     } catch (e) {
-      print(e.toString());
+      _showSignInError(context, e);
     }
   }
 
-  Future<void> _sginInWithFacebook() async {
+  Future<void> _sginInWithFacebook(BuildContext context) async {
+    final auth = Provider.of<Authbase>(context, listen: false);
     try {
       await auth.signInWithFacebook();
     } catch (e) {
-      print(e.toString());
+      _showSignInError(context, e);
     }
   }
 
   void _signInWithEmail(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (context) => EmailSignInPage(
-        auth: auth,
-      ),
+      builder: (context) => const EmailSignInPage(),
     ));
   }
 
@@ -73,13 +87,13 @@ class SignInPage extends StatelessWidget {
               assetName: 'images/google-logo.png',
               text: "Sign in with Google",
               color: Colors.black87,
-              onPressed: _sginInWithGoogle),
+              onPressed: () => _sginInWithGoogle(context)),
           const SizedBox(height: 8.0),
           SocialSignInButton(
               assetName: 'images/facebook-logo.png',
               text: "Sign in with Facebook",
               color: const Color(0xFF334D92),
-              onPressed: _sginInWithFacebook),
+              onPressed: () => _sginInWithFacebook(context)),
           const SizedBox(height: 8.0),
           SignInButton(
               text: "Sign in with email",
@@ -94,7 +108,7 @@ class SignInPage extends StatelessWidget {
             text: "Go anonymously",
             textColor: Colors.black87,
             color: Colors.lime[300],
-            onPressed: _sginInAnonymously,
+            onPressed: () => _sginInAnonymously(context),
           ),
         ],
       ),

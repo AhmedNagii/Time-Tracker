@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker/common_widgets/alert_dialog.dart';
+import 'package:time_tracker/common_widgets/show_exception_alert_dialog.dart';
 import 'package:time_tracker/services/auth.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key key, @required this.auth}) : super(key: key);
-  final Authbase auth;
+  const HomePage({
+    Key key,
+  }) : super(key: key);
 
-  Future<void> _sginOut() async {
+  Future<void> _sginOut(BuildContext context) async {
+    final auth = Provider.of<Authbase>(context, listen: false);
     try {
       await auth.signOut();
     } catch (e) {
-      print(e.toString());
+      showExceptionAlertDialog(context, title: 'Logout failed', exception: e);
     }
   }
 
@@ -21,7 +25,7 @@ class HomePage extends StatelessWidget {
         defaultActionText: 'Logout',
         cancelActionText: 'Cancel');
     if (didRequestSignOut == true) {
-      _sginOut();
+      _sginOut(context);
     }
   }
 

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker/common_widgets/alert_dialog.dart';
+import 'package:provider/provider.dart';
+import 'package:time_tracker/common_widgets/show_exception_alert_dialog.dart';
 import 'package:time_tracker/services/auth.dart';
 import '/app/sign_in/validators.dart';
 import '/common_widgets/form_submit_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 enum EmailFormType { signIn, register }
 
 // ignore: use_key_in_widget_constructors
 class EmailSignInForm extends StatefulWidget with EmailAndPasswordValidator {
-  EmailSignInForm({Key key, @required this.auth}) : super(key: key);
-  final Authbase auth;
+  EmailSignInForm({
+    Key key,
+  }) : super(key: key);
 
   @override
   _EmailSignInFormState createState() => _EmailSignInFormState();
@@ -29,40 +33,24 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   bool _isLoading = false;
 
   void _submit() async {
+    final auth = Provider.of<Authbase>(context, listen: false);
     setState(() {
       _submitted = true;
       _isLoading = true;
     });
     try {
       if (_formType == EmailFormType.signIn) {
-        await widget.auth.signInWithEmailAndPassword(_email, _password);
+        await auth.signInWithEmailAndPassword(_email, _password);
       } else {
-        widget.auth.createAccountWithEmailAndPassword(_email, _password);
+        auth.createAccountWithEmailAndPassword(_email, _password);
       }
       Navigator.of(context).pop();
-    } catch (e) {
-      showAlertDialog(context,
-          title: 'Sign in failed',
-          content: e.toString(),
-          defaultActionText: 'OK');
-
-//       if(Platform == TargetPlatform.iOS ){
-// print('fuck');
-//       }else{
-//       showDialog(
-//           context: context,
-//           builder: (context) {
-//             return AlertDialog(
-//               title: const Text('Sign in failed'),
-//               content: Text(e.toString()),
-//               actions: [
-//                 TextButton(
-//                   child: const Text('OK'),
-//                   onPressed: () => Navigator.of(context).pop(),
-//                 )
-//               ],
-//             );
-//           });}
+    } on FirebaseAuthException catch (e) {
+      showExceptionAlertDialog(
+        context,
+        title: 'Sign in failed',
+        exception: e,
+      );
     } finally {
       setState(() {
         _isLoading = false;
